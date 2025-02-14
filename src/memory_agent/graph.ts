@@ -6,22 +6,21 @@ import { createCheckpointer } from "./checkpointer.js";
 import { AGENT_PROMPT } from "./prompts.js";
 import { ToolCall } from "@langchain/core/messages/tool";
 
-// Initialize model
-const model = new ChatOpenAI({
-  modelName: "o3-mini",
-  temperature: 0,
-});
-
 // Create workflow
 export const agent = entrypoint({
-  name: "agent",
   checkpointer: await createCheckpointer(),
-}, async (messages: BaseMessage[]) => {
+  name: "hr_support"
+}, async (messages: BaseMessage[], config) => {
   // Get previous messages from state
   const previous = getPreviousState<BaseMessage[]>() ?? [];
   
-  // Initialize tools
-  const tools = initializeTools();
+  // Initialize model and tools with config
+  const model = new ChatOpenAI({
+    modelName: "o3-mini",
+    temperature: 0,
+  });
+
+  const tools = initializeTools(config);
   const toolsByName = Object.fromEntries(tools.map((tool) => [tool.name, tool]));
 
   // Define tasks
@@ -82,18 +81,25 @@ export const agent = entrypoint({
   if (llmResponse.content.toString().toLowerCase().includes("i am not sure") || 
       llmResponse.content.toString().toLowerCase().includes("i cannot find")) {
     const humanResponse = interrupt({
-      query: "Please provide guidance on how to answer this question.",
       current_response: llmResponse.content,
+      action: "Please provide guidance on how to answer this question.",
     });
 
     return entrypoint.final({
-      value: llmResponse,
+      value: {
+        messages: currentMessages,
+        ai_response: llmResponse.content,
+        human_response: humanResponse,
+      },
       save: currentMessages
     });
   }
 
   return entrypoint.final({
-    value: llmResponse,
+    value: {
+      messages: currentMessages,
+      ai_response: llmResponse.content,
+    },
     save: currentMessages
   });
 });

@@ -37,12 +37,14 @@ async function main() {
 
     try {
       // Start the workflow with thread configuration
-      const stream = await agent.stream([new HumanMessage(question)], config);
+      const stream = await agent.stream([
+        new HumanMessage(question)
+      ], config);
 
       for await (const step of stream) {
         for (const [taskName, update] of Object.entries(step)) {
           // Skip the final agent output
-          if (taskName === "agent") continue;
+          if (taskName === "hr_support") continue;
           
           const message = update as BaseMessage;
           console.log(`\n${taskName}:`);
@@ -66,16 +68,17 @@ async function main() {
           );
 
           for await (const resumeStep of resumeStream) {
-            if (resumeStep.agent) {
+            if (resumeStep.hr_support) {
               console.log("\nFinal Response:");
-              console.log(resumeStep.agent.content);
+              console.log("AI Response:", resumeStep.hr_support.ai_response);
+              console.log("Human Guidance:", resumeStep.hr_support.human_response);
             }
           }
         } 
         // Handle normal response
-        else if (step.agent) {
+        else if (step.hr_support) {
           console.log("\nFinal Response:");
-          console.log(step.agent.content);
+          console.log("AI Response:", step.hr_support.ai_response);
         }
       }
     } catch (error) {
