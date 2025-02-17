@@ -6,6 +6,6 @@ export async function createCheckpointer() {
 
   return new MongoDBSaver({
     client,
-    checkpointCollectionName: "checkpoints"
+    checkpointCollectionName: "checkpoints",
   });
-} 
+}

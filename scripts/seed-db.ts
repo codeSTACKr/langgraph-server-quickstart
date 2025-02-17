@@ -17,11 +17,11 @@ async function createSearchIndex(db: any) {
 
     // Create Atlas Vector Search index
     await db.collection("hr_policies").createIndex(
-      { "vector_embedding": 1 },
+      { vector_embedding: 1 },
       {
         name: "vector_index",
-        background: true
-      }
+        background: true,
+      },
     );
 
     // Create Atlas Vector Search index definition
@@ -32,19 +32,21 @@ async function createSearchIndex(db: any) {
           vector_embedding: {
             dimensions: 1536,
             similarity: "cosine",
-            type: "knnVector"
-          }
-        }
-      }
+            type: "knnVector",
+          },
+        },
+      },
     };
 
     // Create the vector search index using the Atlas Search API
     await db.command({
       createSearchIndexes: "hr_policies",
-      indexes: [{
-        name: "vector_search_index",
-        definition: indexDefinition
-      }]
+      indexes: [
+        {
+          name: "vector_search_index",
+          definition: indexDefinition,
+        },
+      ],
     });
 
     console.log("Created Atlas Vector Search index");
@@ -70,11 +72,11 @@ async function generateEmbeddings(policies: typeof hrPolicies) {
           lastUpdated: policy.lastUpdated,
           requiresManagerApproval: policy.requiresManagerApproval,
         },
-      })
+      }),
   );
 
   const vectors = await embeddings.embedDocuments(
-    documents.map((doc) => doc.pageContent)
+    documents.map((doc) => doc.pageContent),
   );
 
   return documents.map((doc, i) => ({
@@ -92,20 +94,22 @@ async function seedDatabase() {
     console.log("Connected to MongoDB");
 
     const db = client.db();
-    
+
     // Create collections if they don't exist
     await db.createCollection("hr_policies");
     await db.createCollection("checkpoints");
-    
+
     // Clear existing policies
     await db.collection("hr_policies").deleteMany({});
-    
+
     // Generate embeddings and insert policies
     console.log("Generating embeddings for HR policies...");
     const policiesWithEmbeddings = await generateEmbeddings(hrPolicies);
-    
+
     // Insert policies with embeddings
-    const result = await db.collection("hr_policies").insertMany(policiesWithEmbeddings);
+    const result = await db
+      .collection("hr_policies")
+      .insertMany(policiesWithEmbeddings);
     console.log(`Inserted ${result.insertedCount} HR policies with embeddings`);
 
     // Create vector search index
@@ -113,12 +117,10 @@ async function seedDatabase() {
     await createSearchIndex(db);
 
     // Create TTL index for checkpoints (expire after 24 hours of inactivity)
-    await db.collection("checkpoints").createIndex(
-      { "ts": 1 },
-      { expireAfterSeconds: 86400 }
-    );
+    await db
+      .collection("checkpoints")
+      .createIndex({ ts: 1 }, { expireAfterSeconds: 86400 });
     console.log("Created TTL index for checkpoints");
-
   } catch (error) {
     console.error("Error seeding database:", error);
     process.exit(1);
@@ -129,4 +131,4 @@ async function seedDatabase() {
 }
 
 // Run seeding
-seedDatabase().catch(console.error); 
+seedDatabase().catch(console.error);

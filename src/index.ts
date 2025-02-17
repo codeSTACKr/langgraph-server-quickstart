@@ -37,15 +37,13 @@ async function main() {
 
     try {
       // Start the workflow with thread configuration
-      const stream = await agent.stream([
-        new HumanMessage(question)
-      ], config);
+      const stream = await agent.stream([new HumanMessage(question)], config);
 
       for await (const step of stream) {
         for (const [taskName, update] of Object.entries(step)) {
           // Skip the final agent output
           if (taskName === "hr_support") continue;
-          
+
           const message = update as BaseMessage;
           console.log(`\n${taskName}:`);
           prettyPrintMessage(message);
@@ -54,27 +52,34 @@ async function main() {
         // Handle interrupt for human assistance
         if ("__interrupt__" in step) {
           console.log("\nNeeds human assistance!");
-          console.log("Current AI Response:", step.__interrupt__[0].value.current_response);
+          console.log(
+            "Current AI Response:",
+            step.__interrupt__[0].value.current_response,
+          );
           console.log("Waiting for human guidance...");
 
           // In a real application, you would get the human response from a UI
           // For this demo, we'll simulate a human response
-          const humanResponse = "Please refer the employee to their manager for guidance on this topic.";
-          
+          const humanResponse =
+            "Please refer the employee to their manager for guidance on this topic.";
+
           // Resume the workflow with the human response
           const resumeStream = await agent.stream(
-            new Command({ resume: humanResponse }), 
-            config
+            new Command({ resume: humanResponse }),
+            config,
           );
 
           for await (const resumeStep of resumeStream) {
             if (resumeStep.hr_support) {
               console.log("\nFinal Response:");
               console.log("AI Response:", resumeStep.hr_support.ai_response);
-              console.log("Human Guidance:", resumeStep.hr_support.human_response);
+              console.log(
+                "Human Guidance:",
+                resumeStep.hr_support.human_response,
+              );
             }
           }
-        } 
+        }
         // Handle normal response
         else if (step.hr_support) {
           console.log("\nFinal Response:");
@@ -87,4 +92,4 @@ async function main() {
   }
 }
 
-main().catch(console.error); 
+main().catch(console.error);

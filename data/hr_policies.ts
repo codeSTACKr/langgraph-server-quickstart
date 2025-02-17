@@ -24,7 +24,7 @@ export const hrPolicies: HRPolicy[] = [
         * Multiple team members taking time off simultaneously
     `,
     lastUpdated: new Date("2024-01-01"),
-    requiresManagerApproval: true
+    requiresManagerApproval: true,
   },
   {
     id: "SICK001",
@@ -42,7 +42,7 @@ export const hrPolicies: HRPolicy[] = [
         * Care for immediate family members
     `,
     lastUpdated: new Date("2024-01-01"),
-    requiresManagerApproval: false
+    requiresManagerApproval: false,
   },
   {
     id: "WFH001",
@@ -61,7 +61,7 @@ export const hrPolicies: HRPolicy[] = [
       - Permanent remote work requires VP approval
     `,
     lastUpdated: new Date("2024-02-15"),
-    requiresManagerApproval: true
+    requiresManagerApproval: true,
   },
   {
     id: "BEN001",
@@ -81,7 +81,7 @@ export const hrPolicies: HRPolicy[] = [
       - New employees: 30-day enrollment window
     `,
     lastUpdated: new Date("2024-01-15"),
-    requiresManagerApproval: false
+    requiresManagerApproval: false,
   },
   {
     id: "PAR001",
@@ -98,6 +98,6 @@ export const hrPolicies: HRPolicy[] = [
       - Flexible return-to-work arrangements available
     `,
     lastUpdated: new Date("2024-01-01"),
-    requiresManagerApproval: true
-  }
-]; 
+    requiresManagerApproval: true,
+  },
+];

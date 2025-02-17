@@ -15,7 +15,7 @@ export function ensureConfiguration(config?: LangGraphRunnableConfig) {
   const configurable = config?.configurable || {};
   return {
     userId: configurable?.userId || "default",
-    model: configurable?.model || "openai/o3-mini",
+    model: configurable?.model || "openai:o3-mini",
     systemPrompt: configurable?.systemPrompt || AGENT_PROMPT,
   };
 }
