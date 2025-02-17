@@ -10,7 +10,7 @@ module.exports = {
     project: "./tsconfig.json",
     sourceType: "module",
   },
-  plugins: ["import", "@typescript-eslint", "no-instanceof"],
+  plugins: ["import", "@typescript-eslint"],
   ignorePatterns: [
     ".eslintrc.cjs",
     "scripts",
@@ -23,7 +23,6 @@ module.exports = {
   ],
   rules: {
     "no-process-env": 0,
-    "no-instanceof/no-instanceof": 2,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-empty-function": 0,
     "@typescript-eslint/no-non-null-assertion": 0,
@@ -48,6 +47,7 @@ module.exports = {
     "no-await-in-loop": 0,
     "no-bitwise": 0,
     "no-console": 0,
+    "no-constant-condition": 0,
     "no-restricted-syntax": 0,
     "no-shadow": 0,
     "no-continue": 0,

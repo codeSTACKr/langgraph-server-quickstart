@@ -30,15 +30,13 @@ export function initializeTools(config?: LangGraphRunnableConfig) {
       indexName: "vector_index",
       textKey: "content",
       embeddingKey: "vector_embedding",
-    }
+    },
   );
 
   /**
    * Search HR policies using vector search
    */
-  async function searchPolicies(opts: {
-    query: string;
-  }): Promise<string> {
+  async function searchPolicies(opts: { query: string }): Promise<string> {
     const { query } = opts;
 
     const results = await vectorStore.similaritySearch(query, 2);
@@ -47,9 +45,10 @@ export function initializeTools(config?: LangGraphRunnableConfig) {
       return "No relevant policies found.";
     }
 
-    return results.map((doc: Document) => {
-      const metadata = doc.metadata;
-      return `
+    return results
+      .map((doc: Document) => {
+        const metadata = doc.metadata;
+        return `
         Policy: ${metadata.title}
         Category: ${metadata.category}
         Last Updated: ${metadata.lastUpdated}
@@ -57,23 +56,25 @@ export function initializeTools(config?: LangGraphRunnableConfig) {
         Content:
         ${doc.pageContent}
       `.trim();
-    }).join("\n\n");
+      })
+      .join("\n\n");
   }
 
   const searchPoliciesTools = tool(searchPolicies, {
     name: "searchPolicies",
-    description: "Search HR policies using semantic search to find relevant information.",
+    description:
+      "Search HR policies using semantic search to find relevant information.",
     schema: z.object({
-      query: z.string().describe("The search query to find relevant HR policies."),
+      query: z
+        .string()
+        .describe("The search query to find relevant HR policies."),
     }),
   });
 
   /**
    * Request human assistance for questions that cannot be answered
    */
-  async function humanAssistance(opts: {
-    query: string;
-  }): Promise<string> {
+  async function humanAssistance(opts: { query: string }): Promise<string> {
     const { query } = opts;
 
     // This will be intercepted by the interrupt handler
@@ -82,7 +83,8 @@ export function initializeTools(config?: LangGraphRunnableConfig) {
 
   const humanAssistanceTool = tool(humanAssistance, {
     name: "humanAssistance",
-    description: "Request human assistance when a question cannot be answered using available policies.",
+    description:
+      "Request human assistance when a question cannot be answered using available policies.",
     schema: z.object({
       query: z.string().describe("The question that needs human assistance."),
     }),
