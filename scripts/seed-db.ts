@@ -26,16 +26,14 @@ async function createSearchIndex(db: any) {
 
     // Create Atlas Vector Search index definition
     const indexDefinition = {
-      mappings: {
-        dynamic: true,
-        fields: {
-          vector_embedding: {
-            dimensions: 1536,
-            similarity: "cosine",
-            type: "knnVector",
-          },
-        },
-      },
+      "fields": [
+        {
+          "numDimensions": 1536,
+          "path": "vector_embedding",
+          "similarity": "cosine",
+          "type": "vector"
+        }
+      ]
     };
 
     // Create the vector search index using the Atlas Search API
@@ -43,7 +41,7 @@ async function createSearchIndex(db: any) {
       createSearchIndexes: "hr_policies",
       indexes: [
         {
-          name: "vector_search_index",
+          name: "vector_index",
           definition: indexDefinition,
         },
       ],

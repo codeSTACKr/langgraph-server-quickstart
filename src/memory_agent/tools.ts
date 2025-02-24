@@ -5,6 +5,7 @@ import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { Document } from "@langchain/core/documents";
 import { MongoClient } from "mongodb";
+import { HELP_PHRASE } from "./prompts.js";
 
 /**
  * Initialize tools within a function so that they have access to the current
@@ -17,7 +18,7 @@ export function initializeTools(config?: LangGraphRunnableConfig) {
 
   // Initialize MongoDB client
   const client = new MongoClient(process.env.MONGODB_URI!);
-  const db = client.db();
+  const db = client.db("hr_support");
   const collection = db.collection("hr_policies");
 
   // Initialize vector store
@@ -78,7 +79,7 @@ export function initializeTools(config?: LangGraphRunnableConfig) {
     const { query } = opts;
 
     // This will be intercepted by the interrupt handler
-    return `Requesting human assistance for: ${query}`;
+    return `Be sure to include the following in your response: "${HELP_PHRASE} ${query}"`;
   }
 
   const humanAssistanceTool = tool(humanAssistance, {
