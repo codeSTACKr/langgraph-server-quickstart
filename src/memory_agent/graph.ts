@@ -2,7 +2,6 @@ import { ChatOpenAI } from "@langchain/openai";
 import {
   task,
   entrypoint,
-  interrupt,
   addMessages,
   getPreviousState,
 } from "@langchain/langgraph";
@@ -13,7 +12,7 @@ import {
 } from "@langchain/core/messages";
 import { initializeTools } from "./tools.js";
 import { createCheckpointer } from "./checkpointer.js";
-import { AGENT_PROMPT, HELP_PHRASE } from "./prompts.js";
+import { AGENT_PROMPT } from "./prompts.js";
 import { ToolCall } from "@langchain/core/messages/tool";
 
 // Create workflow
@@ -73,17 +72,6 @@ export const agent = entrypoint(
 
     while (true) {
       if (!llmResponse.tool_calls?.length) {
-        if (llmResponse.content.toString().includes(HELP_PHRASE)) {
-          const humanResponse = interrupt({
-            current_response: llmResponse.content,
-            action: "Please provide guidance on how to answer this question.",
-          });
-          currentMessages = addMessages(currentMessages, [
-            llmResponse,
-            humanResponse,
-          ]);
-          continue;
-        }
         break;
       }
 

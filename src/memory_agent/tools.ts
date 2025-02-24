@@ -1,11 +1,10 @@
-import { LangGraphRunnableConfig } from "@langchain/langgraph";
+import { LangGraphRunnableConfig, interrupt } from "@langchain/langgraph";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { Document } from "@langchain/core/documents";
 import { MongoClient } from "mongodb";
-import { HELP_PHRASE } from "./prompts.js";
 
 /**
  * Initialize tools within a function so that they have access to the current
@@ -77,9 +76,8 @@ export function initializeTools(config?: LangGraphRunnableConfig) {
    */
   async function humanAssistance(opts: { query: string }): Promise<string> {
     const { query } = opts;
-
-    // This will be intercepted by the interrupt handler
-    return `Be sure to include the following in your response: "${HELP_PHRASE} ${query}"`;
+    const humanResponse = await interrupt({query});
+    return humanResponse.content.toString();
   }
 
   const humanAssistanceTool = tool(humanAssistance, {

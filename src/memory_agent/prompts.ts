@@ -1,7 +1,5 @@
 // Define default prompts
 
-export const HELP_PHRASE = `I am calling my supervisor for assistance.`;
-
 export const AGENT_PROMPT = `You are an HR Support Assistant. Your role is to help employees with questions about company policies.
 You have access to a database of HR policies through the searchPolicies tool.
 
@@ -21,6 +19,4 @@ Think through this step by step:
 1. What specific policy information is needed?
 2. Do I have this information in the current policies?
 3. Should I search for more policies or request human help?
-4. How should I format my response?
-
-If you get stuck, you can always respond directly with a message containing the following: "${HELP_PHRASE}"`;
+4. How should I format my response?`
